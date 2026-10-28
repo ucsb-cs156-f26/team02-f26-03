@@ -135,15 +135,26 @@ describe("MenuItemReviewForm tests", () => {
     expect(
       screen.getByText(/Stars must be between 0 and 5/),
     ).toBeInTheDocument();
+  });
+
+  test("that stars below 0 is rejected", async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <MenuItemReviewForm />
+        </Router>
+      </QueryClientProvider>,
+    );
+
+    expect(await screen.findByText(/Create/)).toBeInTheDocument();
+    const starsInput = screen.getByTestId(`${testId}-stars`);
 
     fireEvent.change(starsInput, { target: { value: "-1" } });
-    fireEvent.click(submitButton);
+    fireEvent.click(screen.getByTestId(`${testId}-submit`));
 
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Stars must be between 0 and 5/),
-      ).toBeInTheDocument();
-    });
+    expect(
+      await screen.findByText("Stars must be between 0 and 5."),
+    ).toBeInTheDocument();
   });
 
   test("No error messages on good input", async () => {
