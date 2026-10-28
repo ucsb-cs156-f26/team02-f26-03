@@ -23,6 +23,12 @@ function ArticleForm({
   // Stryker disable Regex
   const isodate_regex =
     /(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/i;
+
+  // something@something.something, with no whitespace and a single @
+  const email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // http:// or https://, a host with at least one dot, then an optional path/query/fragment
+  const url_regex = /^https?:\/\/[^\s/?#]+\.[^\s/?#]+([/?#]\S*)?$/i;
   // Stryker restore Regex
 
   return (
@@ -56,6 +62,10 @@ function ArticleForm({
               isInvalid={Boolean(errors.title)}
               {...register("title", {
                 required: "Title is required.",
+                maxLength: {
+                  value: 255,
+                  message: "Title must be at most 255 characters.",
+                },
               })}
             />
             <Form.Control.Feedback type="invalid">
@@ -76,6 +86,10 @@ function ArticleForm({
               isInvalid={Boolean(errors.email)}
               {...register("email", {
                 required: "Email is required.",
+                pattern: {
+                  value: email_regex,
+                  message: "Email must be a valid email address.",
+                },
               })}
             />
             <Form.Control.Feedback type="invalid">
@@ -96,6 +110,11 @@ function ArticleForm({
               isInvalid={Boolean(errors.url)}
               {...register("url", {
                 required: "Url is required.",
+                pattern: {
+                  value: url_regex,
+                  message:
+                    "Url must be a valid url starting with http:// or https://.",
+                },
               })}
             />
             <Form.Control.Feedback type="invalid">
@@ -116,6 +135,10 @@ function ArticleForm({
               isInvalid={Boolean(errors.explanation)}
               {...register("explanation", {
                 required: "Explanation is required.",
+                maxLength: {
+                  value: 255,
+                  message: "Explanation must be at most 255 characters.",
+                },
               })}
             />
             <Form.Control.Feedback type="invalid">
