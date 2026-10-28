@@ -59,7 +59,7 @@ describe("UCSBOrganizationEditPage tests", () => {
     });
 
     const queryClient = new QueryClient();
-    test("renders header but table is not present", async () => {
+    test("renders header but form is not present", async () => {
       const restoreConsole = mockConsole();
 
       render(
@@ -71,7 +71,7 @@ describe("UCSBOrganizationEditPage tests", () => {
       );
       await screen.findByText("Edit Organization");
       expect(
-        screen.queryByTestId("UCSBOrganizationForm-orgCode"),
+        screen.queryByLabelText("Organization Code"),
       ).not.toBeInTheDocument();
       restoreConsole();
     });
@@ -113,7 +113,7 @@ describe("UCSBOrganizationEditPage tests", () => {
 
     const queryClient = new QueryClient();
 
-    test("Is populated with the data provided, and changes when data is changed", async () => {
+    test("Is populated with the data provided", async () => {
       render(
         <QueryClientProvider client={queryClient}>
           <MemoryRouter>
@@ -169,5 +169,43 @@ describe("UCSBOrganizationEditPage tests", () => {
       ); // posted object
     });
 
+    test("Changes when you click Update", async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter>
+            <UCSBOrganizationEditPage />
+          </MemoryRouter>
+        </QueryClientProvider>,
+      );
+
+      await screen.findByLabelText("Organization Code");
+
+      const orgCodeField = screen.getByLabelText("Organization Code");
+      const orgTranslationShortField = screen.getByLabelText(
+        "Short Organization Code Translation",
+      );
+      const orgTranslationField = screen.getByLabelText(
+        "Organization Code Translation",
+      );
+      const inactiveField = screen.getByLabelText("Inactive");
+      const submitButton = screen.getByText("Update");
+
+      expect(orgCodeField).toHaveValue("ZPR");
+      expect(orgTranslationShortField).toHaveValue("ZETA PHI RHO");
+      expect(orgTranslationField).toHaveValue("ZETA PHI RHO");
+      expect(inactiveField).toHaveValue("false");
+      expect(submitButton).toBeInTheDocument();
+
+      fireEvent.change(orgTranslationField, {
+        target: { value: "ZETA PHI RHO" },
+      });
+      fireEvent.change(inactiveField, { target: { value: "true" } });
+
+      fireEvent.click(submitButton);
+
+      await waitFor(() => expect(mockToast).toBeCalled());
+      expect(mockToast).toBeCalledWith("Organization Updated - orgCode: ZPR");
+      expect(mockNavigate).toBeCalledWith({ to: "/ucsborganization" });
+    });
   });
 });
