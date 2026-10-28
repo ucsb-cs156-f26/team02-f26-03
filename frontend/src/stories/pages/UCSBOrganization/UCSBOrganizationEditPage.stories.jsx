@@ -31,7 +31,7 @@ Default.parameters = {
         status: 200,
       });
     }),
-    http.put("/api/ucsborganizations", async ({ request }) => {
+    http.put("/api/ucsborganizations", async () => {
       return HttpResponse.json({ orgCode: "ZPR" }, { status: 200 });
     }),
   ],
