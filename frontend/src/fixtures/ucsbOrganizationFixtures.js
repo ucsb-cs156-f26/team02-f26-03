@@ -5,7 +5,7 @@ const ucsbOrganizationFixtures = {
     orgTranslation: "ZETA PHI RHO",
     inactive: false,
   },
-  oneOrganization: [
+  threeOrganization: [
     {
       orgCode: "ZPR",
       orgTranslationShort: "ZETA PHI RHO",
