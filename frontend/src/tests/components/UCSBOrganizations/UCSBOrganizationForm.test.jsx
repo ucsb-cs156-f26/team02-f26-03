@@ -116,4 +116,30 @@ describe("UCSBOrganizationForm tests", () => {
       expect(screen.getByText(/Max length 30 characters/)).toBeInTheDocument();
     });
   });
+
+  test("displays max length validation error for orgTranslationShort", async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <UCSBOrganizationForm />
+        </Router>
+      </QueryClientProvider>,
+    );
+
+    expect(await screen.findByText(/Create/)).toBeInTheDocument();
+    const submitButton = screen.getByText(/Create/);
+
+    const shortTranslationInput = screen.getByLabelText(
+      "Short Organization Code Translation",
+    );
+
+    fireEvent.change(shortTranslationInput, {
+      target: { value: "a".repeat(31) },
+    });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Max length 30 characters/)).toBeInTheDocument();
+    });
+  });
 });
