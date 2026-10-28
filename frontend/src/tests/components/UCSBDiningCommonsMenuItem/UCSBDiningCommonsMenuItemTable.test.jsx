@@ -1,10 +1,4 @@
-
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router";
 import axios from "axios";
@@ -71,31 +65,19 @@ describe("UCSBDiningCommonsMenuItemTable tests", () => {
   test("renders empty table correctly", () => {
     renderTable([], currentUserFixtures.userOnly);
 
-    const headers = [
-      "ID",
-      "Dining Commons Code",
-      "Name",
-      "Station",
-    ];
+    const headers = ["ID", "Dining Commons Code", "Name", "Station"];
 
     headers.forEach((header) => {
       expect(screen.getByText(header)).toBeInTheDocument();
     });
 
-    expect(
-      screen.queryByTestId(`${testId}-row-0`),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId(`${testId}-row-0`)).not.toBeInTheDocument();
   });
 
   test("shows all data without action buttons for ordinary user", () => {
     renderTable(menuItems, currentUserFixtures.userOnly);
 
-    const expectedFields = [
-      "id",
-      "diningCommonsCode",
-      "name",
-      "station",
-    ];
+    const expectedFields = ["id", "diningCommonsCode", "name", "station"];
 
     menuItems.forEach((item, rowIndex) => {
       expectedFields.forEach((field) => {
@@ -133,9 +115,9 @@ describe("UCSBDiningCommonsMenuItemTable tests", () => {
     expect(editButtons[0]).toHaveClass("btn-primary");
     expect(deleteButtons[0]).toHaveClass("btn-danger");
 
-    expect(
-      screen.getByTestId(`${testId}-cell-row-0-col-id`),
-    ).toHaveTextContent("1");
+    expect(screen.getByTestId(`${testId}-cell-row-0-col-id`)).toHaveTextContent(
+      "1",
+    );
   });
 
   test("Edit button navigates to correct page", async () => {
@@ -159,19 +141,13 @@ describe("UCSBDiningCommonsMenuItemTable tests", () => {
       .onDelete("/api/UCSBDiningCommonsMenuItem")
       .reply(200, { message: "Menu item deleted" });
 
-    const toastSpy = vi.spyOn(toast, "success").mockImplementation(
-      () => "test-toast",
-    );
+    const toastSpy = vi
+      .spyOn(toast, "success")
+      .mockImplementation(() => "test-toast");
 
-    const queryClient = renderTable(
-      menuItems,
-      currentUserFixtures.adminUser,
-    );
+    const queryClient = renderTable(menuItems, currentUserFixtures.adminUser);
 
-    const invalidateSpy = vi.spyOn(
-      queryClient,
-      "invalidateQueries",
-    );
+    const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 
     const deleteButton = screen.getByTestId(
       `${testId}-cell-row-2-col-Delete-button`,
@@ -186,9 +162,7 @@ describe("UCSBDiningCommonsMenuItemTable tests", () => {
 
     const request = axiosMock.history.delete[0];
 
-    expect(request.url).toBe(
-      "/api/UCSBDiningCommonsMenuItem",
-    );
+    expect(request.url).toBe("/api/UCSBDiningCommonsMenuItem");
 
     expect(request.params).toEqual({
       id: 7,
@@ -196,9 +170,7 @@ describe("UCSBDiningCommonsMenuItemTable tests", () => {
 
     // Verify the success callback and message
     await waitFor(() => {
-      expect(toastSpy).toHaveBeenCalledWith(
-        "Menu item deleted",
-      );
+      expect(toastSpy).toHaveBeenCalledWith("Menu item deleted");
     });
 
     // Verify cache invalidation uses the correct query key
@@ -214,9 +186,7 @@ describe("UCSBDiningCommonsMenuItemTable tests", () => {
       testIdPrefix: "CustomMenuTable",
     });
 
-    expect(
-      screen.getByTestId("CustomMenuTable"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("CustomMenuTable")).toBeInTheDocument();
 
     expect(
       screen.getByTestId("CustomMenuTable-cell-row-0-col-name"),

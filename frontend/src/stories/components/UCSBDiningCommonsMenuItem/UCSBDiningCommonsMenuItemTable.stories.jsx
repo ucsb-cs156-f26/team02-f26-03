@@ -1,4 +1,3 @@
-
 import UCSBDiningCommonsMenuItemTable from "main/components/UCSBDiningCommonsMenuItem/UCSBDiningCommonsMenuItemTable";
 
 import { ucsbDiningCommonsMenuItemFixtures } from "fixtures/ucsbDiningCommonsMenuItemFixtures";
@@ -6,8 +5,7 @@ import { currentUserFixtures } from "fixtures/currentUserFixtures";
 import { http, HttpResponse } from "msw";
 
 export default {
-  title:
-    "components/UCSBDiningCommonsMenuItem/UCSBDiningCommonsMenuItemTable",
+  title: "components/UCSBDiningCommonsMenuItem/UCSBDiningCommonsMenuItemTable",
   component: UCSBDiningCommonsMenuItemTable,
 };
 
