@@ -17,9 +17,7 @@ export default function UCSBOrganizationCreatePage({ storybook = false }) {
   });
 
   const onSuccess = (ucsbOrganization) => {
-    toast(
-      `New Organization Created - orgCode: ${ucsbOrganization.orgCode}`,
-    );
+    toast(`New Organization Created - orgCode: ${ucsbOrganization.orgCode}`);
   };
 
   const mutation = useBackendMutation(
