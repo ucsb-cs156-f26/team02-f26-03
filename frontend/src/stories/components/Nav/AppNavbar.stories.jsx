@@ -28,7 +28,7 @@ export const NoRole = Template.bind({});
 export const Admin = Template.bind({});
 Admin.args = {
   currentUser: {
-    ...currentUserFixtures.admin,
+    ...currentUserFixtures.adminUser,
   },
 };
 
