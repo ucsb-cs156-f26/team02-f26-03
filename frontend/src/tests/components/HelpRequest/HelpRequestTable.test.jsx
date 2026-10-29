@@ -1,8 +1,29 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import HelpRequestTable from "main/components/HelpRequest/HelpRequestTable";
 
 import { helpRequestFixtures } from "fixtures/helpRequestFixtures";
+
+import { currentUserFixtures } from "fixtures/currentUserFixtures";
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+import { MemoryRouter } from "react-router";
+
+import axios from "axios";
+
+import AxiosMockAdapter from "axios-mock-adapter";
+
+const mockedNavigate = vi.fn();
+
+vi.mock("react-router", async () => {
+  const originalModule = await vi.importActual("react-router");
+
+  return {
+    ...originalModule,
+    useNavigate: () => mockedNavigate,
+  };
+});
 
 describe("HelpRequestTable tests", () => {
   const testId = "HelpRequestTable";
@@ -27,8 +48,28 @@ describe("HelpRequestTable tests", () => {
     "solved",
   ];
 
+  const renderTable = (props = {}) => {
+    const queryClient = new QueryClient();
+
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <HelpRequestTable
+            helpRequests={helpRequestFixtures.threeHelpRequests}
+            currentUser={currentUserFixtures.userOnly}
+            {...props}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   test("renders an empty table correctly", () => {
-    render(<HelpRequestTable helpRequests={[]} />);
+    renderTable({ helpRequests: [] });
 
     expectedHeaders.forEach((headerText) => {
       expect(screen.getByText(headerText)).toBeInTheDocument();
@@ -42,9 +83,7 @@ describe("HelpRequestTable tests", () => {
   });
 
   test("renders all seven columns", () => {
-    render(
-      <HelpRequestTable helpRequests={helpRequestFixtures.threeHelpRequests} />,
-    );
+    renderTable();
 
     expectedHeaders.forEach((headerText) => {
       expect(screen.getByText(headerText)).toBeInTheDocument();
@@ -58,9 +97,7 @@ describe("HelpRequestTable tests", () => {
   });
 
   test("displays HelpRequest data correctly", () => {
-    render(
-      <HelpRequestTable helpRequests={helpRequestFixtures.threeHelpRequests} />,
-    );
+    renderTable();
 
     const expectedValues = {
       id: "1",
@@ -80,27 +117,25 @@ describe("HelpRequestTable tests", () => {
   });
 
   test("displays solved status as Yes and No", () => {
-    render(
-      <HelpRequestTable helpRequests={helpRequestFixtures.threeHelpRequests} />,
-    );
+    renderTable();
 
-    const solvedCells = screen.getAllByTestId(
-      new RegExp(`^${testId}-cell-row-\\d+-col-solved$`),
-    );
+    expect(
+      screen.getByTestId(`${testId}-cell-row-0-col-solved`),
+    ).toHaveTextContent("No");
 
-    expect(solvedCells).toHaveLength(3);
+    expect(
+      screen.getByTestId(`${testId}-cell-row-1-col-solved`),
+    ).toHaveTextContent("Yes");
 
-    expect(solvedCells.map((cell) => cell.textContent)).toEqual([
-      "No",
-      "Yes",
-      "No",
-    ]);
+    expect(
+      screen.getByTestId(`${testId}-cell-row-2-col-solved`),
+    ).toHaveTextContent("No");
   });
 
   test("renders a single HelpRequest", () => {
-    render(
-      <HelpRequestTable helpRequests={[helpRequestFixtures.oneHelpRequest]} />,
-    );
+    renderTable({
+      helpRequests: [helpRequestFixtures.oneHelpRequest],
+    });
 
     expect(screen.getByTestId(`${testId}-cell-row-0-col-id`)).toHaveTextContent(
       "1",
@@ -112,18 +147,87 @@ describe("HelpRequestTable tests", () => {
   });
 
   test("supports a custom testIdPrefix", () => {
-    render(
-      <HelpRequestTable
-        helpRequests={[helpRequestFixtures.oneHelpRequest]}
-        testIdPrefix="CustomHelpRequestTable"
-      />,
+    renderTable({
+      helpRequests: [helpRequestFixtures.oneHelpRequest],
+      testIdPrefix: "CustomHelpRequestTable",
+    });
+
+    expect(
+      screen.getByTestId(
+        "CustomHelpRequestTable-cell-row-0-col-requesterEmail",
+      ),
+    ).toHaveTextContent("ckohlbrecher@ucsb.edu");
+  });
+
+  test("ordinary users cannot see Edit or Delete buttons", () => {
+    renderTable({
+      currentUser: currentUserFixtures.userOnly,
+    });
+
+    expect(
+      screen.queryByTestId(`${testId}-cell-row-0-col-Edit-button`),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByTestId(`${testId}-cell-row-0-col-Delete-button`),
+    ).not.toBeInTheDocument();
+  });
+
+  test("admin users can see Edit and Delete buttons", () => {
+    renderTable({
+      currentUser: currentUserFixtures.adminUser,
+    });
+
+    const editButton = screen.getByTestId(
+      `${testId}-cell-row-0-col-Edit-button`,
     );
 
-    const cell = screen.getByTestId(
-      "CustomHelpRequestTable-cell-row-0-col-requesterEmail",
+    const deleteButton = screen.getByTestId(
+      `${testId}-cell-row-0-col-Delete-button`,
     );
 
-    expect(cell).toHaveTextContent("ckohlbrecher@ucsb.edu");
-    expect(within(cell).queryByRole("button")).not.toBeInTheDocument();
+    expect(editButton).toBeInTheDocument();
+    expect(editButton).toHaveClass("btn-primary");
+
+    expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).toHaveClass("btn-danger");
+  });
+
+  test("Edit button navigates to the correct page", async () => {
+    renderTable({
+      currentUser: currentUserFixtures.adminUser,
+    });
+
+    fireEvent.click(screen.getByTestId(`${testId}-cell-row-0-col-Edit-button`));
+
+    await waitFor(() => {
+      expect(mockedNavigate).toHaveBeenCalledWith("/helprequest/edit/1");
+    });
+  });
+
+  test("Delete button calls the correct backend endpoint", async () => {
+    const axiosMock = new AxiosMockAdapter(axios);
+
+    axiosMock.onDelete("/api/HelpRequest").reply(200, "HelpRequest deleted");
+
+    renderTable({
+      currentUser: currentUserFixtures.adminUser,
+    });
+
+    fireEvent.click(
+      screen.getByTestId(`${testId}-cell-row-0-col-Delete-button`),
+    );
+
+    await waitFor(() => {
+      expect(axiosMock.history.delete.length).toBe(1);
+    });
+
+    expect(axiosMock.history.delete[0].url).toBe("/api/HelpRequest");
+
+    expect(axiosMock.history.delete[0].params).toEqual({
+      id: 1,
+    });
+
+    axiosMock.restore();
   });
 });
