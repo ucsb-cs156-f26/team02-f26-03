@@ -1,4 +1,3 @@
-
 import { Routes, Route } from "react-router";
 import HomePage from "main/pages/HomePage";
 import ProfilePage from "main/pages/ProfilePage";

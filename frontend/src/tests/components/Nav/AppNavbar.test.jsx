@@ -1,4 +1,3 @@
-
 import { render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router";
@@ -212,10 +211,7 @@ describe("AppNavbar tests", () => {
     });
 
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute(
-      "href",
-      "/diningcommonsmenuitem",
-    );
+    expect(link).toHaveAttribute("href", "/diningcommonsmenuitem");
   });
 
   // Issue #6: Verify that the link is hidden from logged out users

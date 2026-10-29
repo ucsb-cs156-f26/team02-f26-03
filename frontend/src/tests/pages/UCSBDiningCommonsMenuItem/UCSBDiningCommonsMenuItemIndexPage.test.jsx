@@ -48,13 +48,13 @@ describe("UCSBDiningCommonsMenuItemIndexPage tests", () => {
     expect(screen.getByText("Edit")).toBeInTheDocument();
 
     expect(screen.getByRole("link", { name: "Create" })).toHaveAttribute(
-  "href",
-  "/diningcommonsmenuitem/create",
-);
+      "href",
+      "/diningcommonsmenuitem/create",
+    );
 
-expect(screen.getByRole("link", { name: "Edit" })).toHaveAttribute(
-  "href",
-  "/diningcommonsmenuitem/edit/1",
-);
+    expect(screen.getByRole("link", { name: "Edit" })).toHaveAttribute(
+      "href",
+      "/diningcommonsmenuitem/edit/1",
+    );
   });
 });
