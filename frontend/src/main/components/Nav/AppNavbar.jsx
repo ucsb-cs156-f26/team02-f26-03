@@ -1,3 +1,4 @@
+
 import { Button, Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link } from "react-router";
 import { hasRole } from "main/utils/useCurrentUser";
@@ -46,7 +47,7 @@ export default function AppNavbar({
           </Nav>
 
           <>
-            {/* be sure that each NavDropdown has a unique id and data-testid  */}
+            {/* be sure that each NavDropdown has a unique id and data-testid */}
           </>
 
           <Navbar.Collapse className="justify-content-between">
@@ -57,20 +58,31 @@ export default function AppNavbar({
                   id="appnavbar-admin-dropdown"
                   data-testid="appnavbar-admin-dropdown"
                 >
-                  <NavDropdown.Item href="/admin/users">Users</NavDropdown.Item>
+                  <NavDropdown.Item href="/admin/users">
+                    Users
+                  </NavDropdown.Item>
                 </NavDropdown>
               )}
+
               {currentUser && currentUser.loggedIn ? (
                 <>
                   <Nav.Link as={Link} to="/restaurants">
                     Restaurants
                   </Nav.Link>
+
                   <Nav.Link as={Link} to="/ucsbdates">
                     UCSB Dates
                   </Nav.Link>
+
                   <Nav.Link as={Link} to="/placeholder">
                     Placeholder
                   </Nav.Link>
+
+                  {hasRole(currentUser, "ROLE_USER") && (
+                    <Nav.Link as={Link} to="/diningcommonsmenuitem">
+                      UCSBDiningCommonsMenuItem
+                    </Nav.Link>
+                  )}
                 </>
               ) : (
                 <></>
