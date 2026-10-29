@@ -48,7 +48,6 @@ describe("AppNavbar tests", () => {
   test("renders H2Console and Swagger links correctly", async () => {
     const currentUser = currentUserFixtures.adminUser;
     const systemInfo = systemInfoFixtures.showingBoth;
-
     const doLogin = vi.fn();
 
     render(
@@ -148,7 +147,6 @@ describe("AppNavbar tests", () => {
   test("renders the ucsbdates link correctly", async () => {
     const currentUser = currentUserFixtures.userOnly;
     const systemInfo = systemInfoFixtures.showingBoth;
-
     const doLogin = vi.fn();
 
     render(
@@ -172,7 +170,6 @@ describe("AppNavbar tests", () => {
   test("renders the restaurants link correctly", async () => {
     const currentUser = currentUserFixtures.userOnly;
     const systemInfo = systemInfoFixtures.showingBoth;
-
     const doLogin = vi.fn();
 
     render(
@@ -193,6 +190,52 @@ describe("AppNavbar tests", () => {
     expect(link.getAttribute("href")).toBe("/restaurants");
   });
 
+  // Issue #6: Verify the UCSBDiningCommonsMenuItem navigation link
+  test("renders UCSBDiningCommonsMenuItem link for logged in user", () => {
+    const currentUser = currentUserFixtures.userOnly;
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <AppNavbar
+            currentUser={currentUser}
+            doLogout={vi.fn()}
+            currentUrl="http://localhost:8080"
+          />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    const link = screen.getByRole("link", {
+      name: "UCSBDiningCommonsMenuItem",
+    });
+
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/diningcommonsmenuitem");
+  });
+
+  // Issue #6: Verify that the link is hidden from logged out users
+  test("hides UCSBDiningCommonsMenuItem link when not logged in", () => {
+    const currentUser = currentUserFixtures.notLoggedIn;
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <AppNavbar
+            currentUser={currentUser}
+            currentUrl="http://localhost:8080"
+          />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    expect(
+      screen.queryByRole("link", {
+        name: "UCSBDiningCommonsMenuItem",
+      }),
+    ).not.toBeInTheDocument();
+  });
+
   test("Restaurant and UCSBDates links do NOT show when not logged in", async () => {
     const currentUser = null;
     const systemInfo = systemInfoFixtures.showingBoth;
@@ -211,7 +254,7 @@ describe("AppNavbar tests", () => {
     );
 
     expect(screen.queryByText("Restaurants")).not.toBeInTheDocument();
-    expect(screen.queryByText("UCSBDates")).not.toBeInTheDocument();
+    expect(screen.queryByText("UCSB Dates")).not.toBeInTheDocument();
   });
 
   test("when oauthlogin undefined, default value is used", async () => {
