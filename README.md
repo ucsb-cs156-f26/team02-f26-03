@@ -12,7 +12,7 @@ Deployments:
 |---------------------------|--------------|-------------------|
 | UCSBDiningCommonsMenuItem | Xianze       | codexr941         |
 | UCSBOrganization          | Brandon      | bkim354           |
-| RecommendationRequest     |              |                   |
+| RecommendationRequest     |  (unassigned)      |                   |
 | MenuItemReview            | Declan       | declanhogg100     |
 | HelpRequest               | Cody         | codykohlbrecher   |
 | Articles                  | Junxi        | jw-x11            |
