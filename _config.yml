@@ -23,4 +23,4 @@ repo_name: "TBD"
 repo: ucsb-cs156-f26/team02-f26-03
 owner: ucsb-cs156-f26
 repo_name: team02-f26-03
-pull_requests: [{"author":{"id":"U_kgDOC5bKNQ","is_bot":false,"login":"bkim354","name":""},"headRefName":"bkim354-ucsborganization-integration-tests","number":111,"title":"bkim354 - ucsborganization integration tests","url":"https://github.com/ucsb-cs156-f26/team02-f26-03/pull/111"}]
+pull_requests: [{"author":{"id":"U_kgDOC5bKNQ","is_bot":false,"login":"bkim354","name":""},"headRefName":"bkim354-ucsborganization-end2end-tests","number":112,"title":"bkim354 - ucsborganization end2end tests","url":"https://github.com/ucsb-cs156-f26/team02-f26-03/pull/112"},{"author":{"id":"U_kgDOC5bKNQ","is_bot":false,"login":"bkim354","name":""},"headRefName":"bkim354-ucsborganization-integration-tests","number":111,"title":"bkim354 - ucsborganization integration tests","url":"https://github.com/ucsb-cs156-f26/team02-f26-03/pull/111"}]
